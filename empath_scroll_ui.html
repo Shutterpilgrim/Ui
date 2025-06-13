@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scroll Reveal UI</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      height: 130vh;
+      font-family: 'DM Serif Display', serif;
+      background: linear-gradient(135deg, #3E8E7E, #F7C59F);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      overflow-x: hidden;
+      color: #ffffff;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero {
+      position: fixed;
+      top: 10vh;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      transition: opacity 1s ease;
+    }
+
+    .hero.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .title {
+      font-size: 5rem;
+      font-weight: 400;
+      margin: 0;
+      display: inline-block;
+      letter-spacing: 0;
+    }
+
+    .title span {
+      display: inline-block;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      margin-top: 0.4rem;
+      letter-spacing: 0.3em;
+      transition: opacity 0.6s ease;
+    }
+
+    .scroll-note {
+      position: fixed;
+      top: 60vh;
+      width: 100%;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.85);
+      animation: wiggle 3s ease-in-out infinite;
+      transition: opacity 0.6s ease;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
+    }
+
+    .scroll-arrow {
+      font-size: 1.5rem;
+      margin-top: 0.4rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .intro {
+      position: fixed;
+      top: calc(10vh + 4rem);
+      width: 100%;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      z-index: 5;
+    }
+
+    .intro.show {
+      opacity: 1;
+    }
+
+    .intro h2 {
+      font-size: 2rem;
+      margin: 0.5rem 0 0.3rem;
+    }
+
+    .intro p {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .buttons-container {
+      position: fixed;
+      top: calc(10vh + 20rem);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .buttons-container.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn {
+      width: 220px;
+      background: white;
+      color: #1d1d1d;
+      border: none;
+      padding: 0.8rem 1.6rem;
+      border-radius: 999px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn:nth-child(2) {
+      background: #263238;
+      color: white;
+    }
+
+    .btn:nth-child(3) {
+      background: #ffab00;
+      color: #1d1d1d;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero" id="heroBlock">
+    <h1 class="title" id="mainTitle">
+      <span>F</span><span>o</span><span>u</span><span>n</span><span>d</span><span>i</span><span>n</span><span>g</span>
+      <span>&nbsp;</span>
+      <span>P</span><span>r</span><span>o</span><span>d</span><span>u</span><span>c</span><span>t</span>
+    </h1>
+    <div class="subtitle" id="subTitle">BPR HUB</div>
+  </div>
+
+  <div class="scroll-note" id="scrollNote">
+    Scroll down for more details
+    <div class="scroll-arrow">↓</div>
+  </div>
+
+  <div class="intro" id="roleIntro">
+    <h2>The Role in a Nutshell</h2>
+    <p>BPR Hub is looking to expand their founding team. They are seeking someone with SaaS experience and a background in chemical manufacturing and processes, to lead and anchor their growing efforts all across the globe.</p>
+  </div>
+
+  <div class="buttons-container" id="buttonBlock">
+    <button class="btn" id="btnRole">About the Role</button>
+    <button class="btn" id="btnCompany">About the Company</button>
+    <button class="btn" id="btnSchedule">Schedule in</button>
+  </div>
+
+  <script>
+    const letters = document.querySelectorAll('.title span');
+    const subtitle = document.getElementById('subTitle');
+    const scrollNote = document.getElementById('scrollNote');
+    const buttons = document.getElementById('buttonBlock');
+    const intro = document.getElementById('roleIntro');
+    const hero = document.getElementById('heroBlock');
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const disappearPoint = window.innerHeight * 0.15;
+      const revealPoint = window.innerHeight * 0.3;
+      const ratio = Math.min(scrollY / disappearPoint, 1);
+
+      letters.forEach((span, i) => {
+        const offset = (i - letters.length / 2) * ratio * 1.5;
+        span.style.transform = `translateX(${offset}vw)`;
+        span.style.opacity = `${1 - (ratio * (0.5 + Math.random() * 0.5))}`;
+      });
+
+      subtitle.style.opacity = `${1 - ratio}`;
+
+      if (scrollY > revealPoint) {
+        buttons.classList.add('show');
+        intro.classList.add('show');
+        scrollNote.style.opacity = '0';
+        hero.classList.add('hidden');
+      } else {
+        buttons.classList.remove('show');
+        intro.classList.remove('show');
+        scrollNote.style.opacity = '1';
+        hero.classList.remove('hidden');
+      }
+    });
+
+    document.getElementById("btnRole").onclick = () => {
+      window.location.href = "https://sites.google.com/empath-lab.com/bpr-hub-product/About-the-Role";
+    };
+    document.getElementById("btnCompany").onclick = () => {
+      window.location.href = "https://sites.google.com/empath-lab.com/bpr-hub-product/about-the-company";
+    };
+    document.getElementById("btnSchedule").onclick = () => {
+      window.location.href = "https://sites.google.com/empath-lab.com/bpr-hub-product/schedule-in";
+    };
+  </script>
+</body>
+</html>
