@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Why This Role, Why Now?</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #89CFF0, #FFB6C1, #90EE90, #9370DB, #00BFFF);
+      background-size: 800% 800%;
+      animation: gradientShift 45s ease infinite;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .title {
+      position: absolute;
+      top: 35%;
+      width: 100%;
+      text-align: center;
+      color: #1e3d59;
+      z-index: 10;
+    }
+
+    .title-row {
+      font-size: 3.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .letter {
+      display: inline-block;
+      transition: opacity 0.3s ease;
+    }
+
+    .title:hover .letter {
+      opacity: 0.2;
+    }
+
+    .floaty {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.85;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="title">
+    <div class="title-row" id="line1"></div>
+    <div class="title-row" id="line2"></div>
+  </div>
+
+  <script>
+    const colors = ["#89CFF0", "#FFB6C1", "#90EE90", "#9370DB", "#00BFFF"];
+    const container = document.body;
+    const numElements = 50;
+    const elements = [];
+
+    for (let i = 0; i < numElements; i++) {
+      const el = document.createElement('div');
+      const size = Math.random() * 20 + 20;
+      el.classList.add('floaty');
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+      el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      el.style.left = `${Math.random() * window.innerWidth}px`;
+      el.style.top = `${Math.random() * window.innerHeight}px`;
+      container.appendChild(el);
+      elements.push({ el, dx: Math.random() - 0.5, dy: Math.random() - 0.5 });
+    }
+
+    function animate() {
+      for (let obj of elements) {
+        let el = obj.el;
+        let rect = el.getBoundingClientRect();
+
+        let left = rect.left + obj.dx * 1.5;
+        let top = rect.top + obj.dy * 1.5;
+
+        if (left < 0 || left > window.innerWidth - rect.width) obj.dx *= -1;
+        if (top < 0 || top > window.innerHeight - rect.height) obj.dy *= -1;
+
+        el.style.left = `${left}px`;
+        el.style.top = `${top}px`;
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    document.addEventListener('mousemove', (e) => {
+      for (let obj of elements) {
+        let el = obj.el;
+        let rect = el.getBoundingClientRect();
+        let dx = e.clientX - (rect.left + rect.width / 2);
+        let dy = e.clientY - (rect.top + rect.height / 2);
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          obj.el.style.transform = `translate(${dx > 0 ? '-' : ''}10px, ${dy > 0 ? '-' : ''}10px)`;
+          el.style.backgroundColor = '#ffffff';
+        } else {
+          obj.el.style.transform = 'translate(0, 0)';
+          el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        }
+      }
+    });
+
+    function createAnimatedText(text, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      for (let char of text) {
+        const span = document.createElement('span');
+        span.classList.add('letter');
+        span.textContent = char === ' ' ? '\u00A0' : char;
+        container.appendChild(span);
+      }
+    }
+
+    createAnimatedText("Why this role", "line1");
+    createAnimatedText("Why now?", "line2");
+  </script>
+</body>
+</html>
